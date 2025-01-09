@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corporate Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css">
+    <style>
+        :root {
+            --chart-1: #4caf50;
+            --chart-2: #2196f3;
+            --chart-3: #ff9800;
+            --chart-4: #9c27b0;
+            --chart-5: #f44336;
+        }
+
+        .key-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .chart-container {
+            margin: 20px 0;
+        }
+
+        .chart {
+            width: 100%;
+            height: 400px;
+        }
+
+        .tabs {
+            margin-top: 20px;
+        }
+
+        .tabs button {
+            margin-right: 10px;
+        }
+
+        .stacked-bar {
+            display: flex;
+            height: 30px;
+            margin-bottom: 10px;
+        }
+
+        .stacked-bar span {
+            text-align: center;
+            color: white;
+            line-height: 30px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Corporate Dashboard</h1>
+
+        <!-- Key Metrics Cards -->
+        <div class="key-metrics">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5>Highest Revenue</h5>
+                    <p class="display-6">$100B</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5>Best Profit Margin</h5>
+                    <p class="display-6">22%</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5>Highest R&D</h5>
+                    <p class="display-6">$12B</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5>Largest Workforce</h5>
+                    <p class="display-6">270,000</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue Comparison Chart -->
+        <div class="chart-container">
+            <h4>Revenue Comparison</h4>
+            <canvas id="revenueChart" class="chart"></canvas>
+        </div>
+
+        <!-- Profit Margins Chart -->
+        <div class="chart-container">
+            <h4>Profit Margins</h4>
+            <canvas id="profitMarginsChart" class="chart"></canvas>
+        </div>
+
+        <!-- Regional Distribution Chart -->
+        <div class="chart-container">
+            <h4>Regional Distribution</h4>
+            <canvas id="regionalDistributionChart" class="chart"></canvas>
+        </div>
+
+        <!-- Market Segments Chart -->
+        <div class="chart-container">
+            <h4>Market Segments</h4>
+            <div class="tabs">
+                <button class="btn btn-primary" onclick="showSegment('nestle')">Nestlé</button>
+                <button class="btn btn-primary" onclick="showSegment('cocaCola')">Coca-Cola</button>
+                <button class="btn btn-primary" onclick="showSegment('jnj')">Johnson & Johnson</button>
+                <button class="btn btn-primary" onclick="showSegment('unilever')">Unilever</button>
+                <button class="btn btn-primary" onclick="showSegment('pg')">Procter & Gamble</button>
+            </div>
+            <canvas id="marketSegmentsChart" class="chart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const revenueData = {
+            labels: ['Nestlé', 'Coca-Cola', 'Johnson & Johnson', 'Unilever', 'Procter & Gamble'],
+            datasets: [{
+                data: [100, 45, 85, 60, 80],
+                backgroundColor: 'var(--chart-1)'
+            }]
+        };
+
+        const profitMarginData = {
+            labels: ['Nestlé', 'Coca-Cola', 'Johnson & Johnson', 'Unilever', 'Procter & Gamble'],
+            datasets: [{
+                data: [15, 20, 22, 16, 18],
+                borderColor: 'var(--chart-2)',
+                fill: false
+            }]
+        };
+
+        const regionalDistributionData = {
+            labels: ['Nestlé', 'Coca-Cola', 'Johnson & Johnson', 'Unilever', 'Procter & Gamble'],
+            datasets: [
+                { label: 'US', data: [45, 35, 50, 30, 45], backgroundColor: 'var(--chart-1)' },
+                { label: 'Europe', data: [30, 22, 25, 25, 25], backgroundColor: 'var(--chart-2)' },
+                { label: 'Asia & Africa', data: [25, 43, 25, 45, 30], backgroundColor: 'var(--chart-3)' }
+            ]
+        };
+
+        const marketSegments = {
+            nestle: [25, 20, 15, 10, 30],
+            cocaCola: [60, 15, 10, 15],
+            jnj: [55, 30, 15],
+            unilever: [40, 40, 20],
+            pg: [35, 25, 20, 20]
+        };
+
+        let revenueChart = new Chart(document.getElementById('revenueChart'), {
+            type: 'bar',
+            data: revenueData,
+            options: { responsive: true }
+        });
+
+        let profitMarginsChart = new Chart(document.getElementById('profitMarginsChart'), {
+            type: 'line',
+            data: profitMarginData,
+            options: { responsive: true }
+        });
+
+        let regionalDistributionChart = new Chart(document.getElementById('regionalDistributionChart'), {
+            type: 'bar',
+            data: regionalDistributionData,
+            options: { responsive: true, stacked: true }
+        });
+
+        let marketSegmentsChart;
+
+        function showSegment(company) {
+            const labels = ['Segment 1', 'Segment 2', 'Segment 3', 'Segment 4', 'Segment 5'];
+            const data = marketSegments[company];
+
+            if (marketSegmentsChart) marketSegmentsChart.destroy();
+
+            marketSegmentsChart = new Chart(document.getElementById('marketSegmentsChart'), {
+                type: 'pie',
+                data: {
+                    labels: labels.slice(0, data.length),
+                    datasets: [{
+                        data: data,
+                        backgroundColor: ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)', 'var(--chart-5)']
+                    }]
+                },
+                options: { responsive: true }
+            });
+        }
+    </script>
+</body>
+</html>
